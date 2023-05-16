@@ -10,26 +10,27 @@
       ansible.legacy.apt:
         name: nginx
         state: present
-    - name: Start service
-      ansible.legacy.service:
-        name: nginx
-        state: started
-        enabled: true
+      notify:
+        Start_nginx
     - name: Allow
       community.general.ufw:
         rule: allow
         port: '80'
         proto: tcp
     - name: Copy nginx file
-      copy:
+      ansible.builtin.copy:
         src: ./index.html
-        dest: /etc/nginx/nginx.conf
-        mode: 0644
-      notify: 
-        - reload_nginx
+        dest: /var/www/html
+        mode: "0644"
+      notify:
+        - Reload_nginx
   handlers:
-  - name: reload_nginx
-    service:
+  - name: Reload_nginx
+    ansible.builtin.service:
       name: nginx
-      state: reload
-
+      state: reloaded
+  - name: Start_nginx
+    ansible.builtin.service:
+      name: nginx
+      state: started
+      enabled: true

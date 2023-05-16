@@ -35,7 +35,14 @@ connection {
 resource "local_file" "ansible_inventory" {
      content = <<-EOT
      [vps]
-     ${digitalocean_droplet.vm.ipv4_address}
+     ${digitalocean_droplet.vm.ipv4_address} 
      EOT
      filename = "inventory.yaml"
 }
+
+
+resource "local_file" "ansible_inventory" {
+content = "${digitalocean_droplet.vm.name}  ansible_host=${digitalocean_droplet.web.ipv4_address} ansible_user=root ansible_ssh_private_key_file=/home/rebrain/.ssh/id_rsa1"
+filename = "ansible_inventory"
+}
+
