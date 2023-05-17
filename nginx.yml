@@ -17,11 +17,24 @@
         rule: allow
         port: '80'
         proto: tcp
-    - name: Copy nginx file
+    - name: Copy nginx conf
       ansible.builtin.copy:
-        src: ./index.html
-        dest: /var/www/html
+        src: files/nginx.conf
+        dest: /etc/nginx
         mode: "0644"
+      notify:
+        - Reload_nginx
+
+    - name: Copy virtualhost1
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        mode: "0644"
+      loop:
+        - src: templates/host1.conf.j2
+          dest: /etc/nginx/conf.d/host1.conf
+        - src: templates/host2.conf.j2
+          dest: /etc/nginx/conf.d/host2.conf
       notify:
         - Reload_nginx
   handlers:

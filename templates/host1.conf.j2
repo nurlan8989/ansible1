@@ -1,0 +1,6 @@
+server {
+ listen 80:
+ server_name ansible1.devops.rebrain.srwx.net;
+ location  / { return 200 ' {{ ansible_hostname }} {{ ansible_os_family }}  1
+' ;}
+}
