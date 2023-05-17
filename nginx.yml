@@ -2,6 +2,7 @@
   hosts: localhost
   become: true
   vars:
+   - vars.yaml
   tasks:
     - name: Cache update
       ansible.legacy.apt:
@@ -19,8 +20,8 @@
         proto: tcp
     - name: Copy nginx conf
       ansible.builtin.copy:
-        src: files/nginx.conf
-        dest: /etc/nginx
+        src: files/nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
         mode: "0644"
       notify:
         - Reload_nginx
@@ -37,6 +38,20 @@
           dest: /etc/nginx/conf.d/host2.conf
       notify:
         - Reload_nginx
+
+    - name: Create Nginx configuration symlink
+      file:
+        src: "{{ item.source }}"
+        dest: "{{ item.dest }}"
+        state: link
+        force: yes
+      loop: "{{ virtual_hosts }}"
+      notify:
+        - Reload_nginx
+
+  
+
+
   handlers:
   - name: Reload_nginx
     ansible.builtin.service:

@@ -1,0 +1,17 @@
+virtual_hosts:
+  - name: host1
+    source: /etc/nginx/conf.d/host1.conf
+    dest: /etc/nginx/sites-enabled/host1.conf
+  - name: host2
+    source:  /etc/nginx/conf.d/host2.conf
+    dest:  /etc/nginx/sites-enabled/host2.conf
+
+
+
+nginx_conf_link_src: /etc/nginx/nginx.conf
+nginx_conf_link_dest: /etc/nginx/conf.d/
+user_name: www-data
+worker_processes: auto
+log_direcotry: /var/log/nginx
+enable_gzip: true
+
