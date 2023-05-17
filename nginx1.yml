@@ -1,0 +1,62 @@
+- name: Install nginx
+  hosts: localhost
+  become: true
+  vars:
+   - vars.yaml
+  tasks:
+    - name: Cache update
+      ansible.legacy.apt:
+        update_cache: true
+    - name: Installing nginx
+      ansible.legacy.apt:
+        name: nginx
+        state: present
+      notify:
+        Start_nginx
+    - name: Allow
+      community.general.ufw:
+        rule: allow
+        port: '80'
+        proto: tcp
+    - name: Copy nginx conf
+      ansible.builtin.copy:
+        src: files/nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+        mode: "0644"
+      notify:
+        - Reload_nginx
+
+    - name: Copy virtualhost1
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        mode: "0644"
+      loop:
+        - src: templates/host.conf.j2
+          dest: /etc/nginx/conf.d/host.conf
+        - src: files/nginx.conf.j2
+          dest: /etc/nginx/nginx.conf
+      notify:
+        - Reload_nginx
+
+    - name: Create Nginx configuration symlink
+      file:
+        src: "{{ item.source }}"
+        dest: "{{ item.dest }}"
+        state: link
+        force: yes
+      loop: "{{ virtual_hosts }}"
+      notify:
+        - Reload_nginx
+
+
+  handlers:
+  - name: Reload_nginx
+    ansible.builtin.service:
+      name: nginx
+      state: reloaded
+  - name: Start_nginx
+    ansible.builtin.service:
+      name: nginx
+      state: started
+      enabled: true
