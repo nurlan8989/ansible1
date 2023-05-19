@@ -1,0 +1,22 @@
+---
+- name: Copy virtualhost1
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "0644"
+  loop:
+    - src: templates/host.conf.j2
+      dest: /etc/nginx/conf.d/host.conf
+  notify:
+    - Reload_nginx
+
+- name: Create Nginx configuration symlink
+  file:
+    src: "{{ item.source }}"
+    dest: "{{ item.dest }}"
+    state: link
+    force: yes
+  loop: "{{ virtual_hosts }}"
+  notify:
+    - Reload_nginx
+

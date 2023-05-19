@@ -1,5 +1,5 @@
-user {{ user_name }};
-worker_processes {{ worker_processes }};
+user www-data;
+worker_processes auto;
 pid /run/nginx.pid;
 include /etc/nginx/modules-enabled/*.conf;
 
@@ -20,13 +20,11 @@ http {
 	ssl_prefer_server_ciphers on;
 
 
-	access_log {{ log_directory }}/access.log;
-	error_log {{ log_directory}}/error.log;
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/error.log;
 
 
-	{% if enable_gzip %}
 	gzip on;
-        {% endif %}
 
 	include /etc/nginx/conf.d/*.conf;
 	include /etc/nginx/sites-enabled/*;

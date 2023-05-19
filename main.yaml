@@ -1,0 +1,7 @@
+---
+- name: Main playbook
+  hosts: localhost
+  become: true
+  roles: 
+    - nginx
+    - nginx-virtualhost

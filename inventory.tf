@@ -6,8 +6,8 @@ resource "local_file" "ansible_inventory" {
 
 resource "local_file"  "virthost" {
   count    = 2
-  content  = "server {\n listen 80;\n server_name ${aws_route53_record.route53_record[count.index].fqdn};\n location / { return 200 ' {{ ansible_hostname }} {{ ansible_os_family }}  ${count.index + 1}\n' ;}\n}"
-  filename = "./templates/site_${count.index + 1}.conf.j2"
+  content  = "server {\n listen 80;\n server_name ${aws_route53_record.arman_devops_rebrain_srwx_net2[count.index].fqdn};\n location / { return 200 ' {{ ansible_hostname }} {{ ansible_os_family }}  ${count.index + 1}\n' ;}\n}"
+  filename = "./templates/host_${count.index + 1}.conf.j2"
 }
 
 
