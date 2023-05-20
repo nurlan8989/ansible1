@@ -1,0 +1,12 @@
+{% for i in srvs %}
+server {
+listen 80 default_server;:
+ server_name {{ i }}.arman_devops.rebrain.srwx.net;
+ location  ~ /\.well-known/acme-challenge/ {
+        allow all;
+        root /var/www/letsencrypt;
+        try_files $uri =404;
+        break;
+    }
+}
+{% endfor %}

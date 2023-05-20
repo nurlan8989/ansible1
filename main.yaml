@@ -1,7 +1,14 @@
 ---
 - name: Main playbook
-  hosts: localhost
+  hosts: test
   become: true
   roles: 
-    - nginx
-    - nginx-virtualhost
+    - role: nginx
+      tags:
+        - role1
+    - role: nginx-virtualhost
+      tags: 
+        - role2
+    - role: nginx-letsencrypt
+      tags:
+        - role3

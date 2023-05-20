@@ -1,6 +1,6 @@
 {% for i in srvs %}
 server {
-# listen 443:
+listen 80:
  server_name {{ i }}.arman_devops.rebrain.srwx.net;
  location  / { return 200 '{{ i }} {{ ansible_hostname }} {{ ansible_os_family }}' ;}
 }

@@ -1,0 +1,10 @@
+server {
+listen 80 default_server;
+ server_name ansible1.devops.rebrain.srwx.net;
+ location  ~ /\.well-known/acme-challenge/ {
+        allow all;
+        root /var/www/letsencrypt;
+        try_files $uri =404;
+        break;
+    }
+}

@@ -1,0 +1,3 @@
+letsencrypt_packages:
+  - letsencrypt
+  - python3-certbot-nginx

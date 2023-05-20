@@ -1,0 +1,45 @@
+- name: Install Certbot and dependencies
+  ansible.legacy.apt:
+    name:  "{{ letsencrypt_packages }}"
+    state: present
+
+- name: Create directory for LetsEncrypt, maintenance page and site root
+  file:
+    path: /var/www/letsencrypt
+    state: directory
+    owner: www-data
+    group: www-data
+
+- name: Generate strong DHE parameter - https://weakdh.org/
+  command: openssl dhparam -out /etc/ssl/dhparam.pem 2048 creates=/etc/ssl/dhparam.pem
+
+
+
+- name: Add letsencrypt nginx default configuration file
+  copy:
+    src: default
+    dest: /etc/nginx/sites-enabled/default
+    owner: root
+    group: root
+  notify: 
+    - Reload_nginx
+
+
+- name: Force nginx reloads
+  meta: flush_handlers
+
+
+- name: Letsencrypt cert generation
+  shell: letsencrypt certonly -n --webroot -w /var/www/letsencrypt -m {{ le_email }} --agree-tos -d {{ domain_name }} --noninteractive --redirect   
+  args:
+    creates: /etc/letsencrypt/live/{{ domain_name }}
+
+
+- name: Copy letsencrypt cron file
+  copy:
+    src: cron/letsencrypt
+    dest: /etc/cron.daily/letsencrypt
+    owner: root
+    group: root
+    mode: 0744
+

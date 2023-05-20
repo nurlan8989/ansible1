@@ -1,0 +1,16 @@
+server_tokens off;
+
+server {
+    listen 80 default_server;
+    server_name {{ domain_name }};
+    root /usr/share/nginx/maintenance;
+
+    index index.html;
+
+    location ~ /\.well-known/acme-challenge/ {
+        allow all;
+        root /var/www/letsencrypt;
+        try_files $uri =404;
+        break;
+    }
+}
