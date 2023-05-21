@@ -1,0 +1,39 @@
+- name: Install epel-release
+  yum:
+    name: epel-release
+    state: present
+
+- name: Install Nginx Centos
+  ansible.legacy.yum:
+    name: "{{ web_server }}"
+      #    name: "{{ nginx_packages[ansible_distribution] }}"
+    state: present
+  when: ansible_distribution == 'CentOS'
+  notify:
+    - Start_nginx
+
+
+- name: Check Nginx configuration
+  command: nginx -t
+  changed_when: false
+  register: nginx_config_check
+
+
+
+- name: Reload Nginx configuration
+  command: nginx -s reload
+  when: nginx_config_check.stdout.find('successful') != -1
+  notify:
+    - Restart_nginx
+
+
+- name: Task CentOS
+  debug:
+    msg: "Runing on CentOS"
+
+- name: copy
+  template:
+    src: centos_nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+  notify:
+    Reload_nginx

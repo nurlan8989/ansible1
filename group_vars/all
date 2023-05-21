@@ -17,11 +17,13 @@ user_name: www-data
 worker_processes: auto
 log_direcotry: /var/log/nginx
 enable_gzip: true
-
-
 le_email: rhel@devops.rebrain.srwx.net 
 domain_name: ansible1.devops.rebrain.srwx.net
-
 ssl_domains:
   - ansible1.devops.rebrain.srwx.net
-  - ansible2.devops.rebrain.srwx.net
+  - ansible3.devops.rebrain.srwx.net
+
+web_server: nginx
+
+access_log:             /var/log/nginx/access.log
+error_log:              /var/log/nginx/error.log

@@ -1,6 +1,6 @@
 ---
 - name: Main playbook
-  hosts: test
+  hosts: test 
   become: true
   roles: 
     - role: nginx

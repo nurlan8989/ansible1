@@ -1,44 +1,15 @@
-- name: Cache update
-  ansible.legacy.apt:
-    update_cache: true
-- name: Installing nginx
-  ansible.legacy.apt:
-    name: nginx
-    state: present
-  notify:
-    - Start_nginx
-- name: Check Nginx configuration
-  command: nginx -t
-  changed_when: false
-  register: nginx_config_check
+- name: Install nginx both OS
+  include_tasks: tasks/ubuntu_tasks.yml
+  when: ansible_distribution == 'Ubuntu'
 
-- name: Reload Nginx configuration
-  command: nginx -s reload
-  when: nginx_config_check.stdout.find('successful') != -1
-  notify:
-    - Restart_nginx 
-- name: Allow
-  community.general.ufw:
-    rule: allow
-    port: '80'
-    proto: tcp
+#  - ansible.builtin.debug:
+#     msg: Ubuntu started
 
 
-- name: copy
-  template:
-    src: nginx.conf.j2
-    dest: /etc/nginx/nginx.conf
-  notify:
-    Reload_nginx
-      #- name: Размещение конфигурации виртуального хоста
-      #template:
-      #src: host.conf.j2 
-      #  dest: "/etc/nginx/conf.d/{{ ansible_hostname }}.conf"
-      #dest: "/etc/nginx/sites-enabled/{{ ansible_hostname }}.conf"
-      #owner: root
-      #group: root
-      # mode: '0644'
-      #notify:
-      # - Reload_nginx
+- name: Isntall nginx
+  include_tasks: tasks/centos_tasks.yml
+  when: ansible_distribution == 'CentOS'
 
 
+    #  - ansible.builtin.debug:
+    # msg: Centos started
