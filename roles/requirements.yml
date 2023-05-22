@@ -1,0 +1,5 @@
+# from Ansible Galaxy, using the latest version
+- src: https://github.com/geerlingguy/ansible-role-nginx
+  scm: git
+  version: 2.3.0
+  name: geerlingguy.java 

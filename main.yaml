@@ -17,3 +17,8 @@
     - role: nginx-letsencrypt
       tags:
         - role3
+
+    - role: geerlingguy.java
+      tags:
+        - role4
+ 
