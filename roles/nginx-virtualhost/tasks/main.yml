@@ -1,4 +1,15 @@
 ---
+- name: Check if sites-enabled folder exists
+  stat:
+    path: /etc/nginx/sites-enabled
+  register: folder_status
+- name: Create sites-enabled folder
+  file:
+    path: /etc/nginx/sites-enabled
+    state: directory
+    mode: '0755'
+  when: not folder_status.stat.exists
+
 - name: Copy virtualhost1
   ansible.builtin.template:
     src: "{{ item.src }}"

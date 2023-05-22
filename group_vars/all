@@ -1,6 +1,6 @@
 srvs:
   - ansible1
-  - ansible2
+  - ansible3
 virtual_hosts:
   # - name: host1
   #  source: /etc/nginx/conf.d/host1.conf
