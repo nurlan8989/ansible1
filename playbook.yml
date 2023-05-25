@@ -1,0 +1,93 @@
+---
+- name: CP index
+  hosts: test
+  become: yes
+  vars_files:
+    - vars.yml
+  tasks:   
+  - name: Проверка доступа к зашифрованным данным
+    debug:
+      var: pass
+  
+  - name: Генерировать SSH-ключ
+    openssh_keypair:
+      path: "{{ ssh_private_key_src }}"
+      size: 4096
+
+  - name: Copy generated key
+    ansible.builtin.copy:
+      src:  "{{ ssh_private_key_src }}"
+      dest:  "{{ ssh_private_key_dest }}"
+      mode: '0600'
+      remote_src : true
+
+
+  - name: Instal new nginx
+    ansible.legacy.apt:
+      name: "{{ web_package }}"
+      state: present
+      update_cache: yes
+    notify: service_enable
+
+  - name: Create directory /etc/nginx/ssl
+    ansible.builtin.file:
+      path: "{{ ssl_dir }}"
+      state: directory
+      mode: '0755'
+
+  - name: Copy SSL certificate
+    ansible.builtin.copy:
+      src: "{{ certificate_path }}"
+      dest: "{{ certificate_path_dest }}"
+      mode: 0644
+
+  - name: Copy private key
+    ansible.builtin.copy:
+      src: "{{ private_key_path }}"
+      dest: "{{ private_key_path_dest }}"
+      mode: '0600'
+
+  - name: Configure  Nginx
+    ansible.builtin.lineinfile:
+      path: /etc/nginx/sites-available/default
+      insertafter: 'listen \[::\]:80 default_server;'
+      line: |
+        listen 443 ssl;
+        ssl_certificate /etc/nginx/ssl/certificate.crt;
+        ssl_certificate_key /etc/nginx/ssl/private.key;
+      state: present
+      regexp: '^listen 443 ssl;$\n^ssl_certificate /etc/nginx/ssl/certificate.crt;$\n^ssl_certificate_key /etc/nginx/ssl/private.key;$\n'
+      backrefs: yes
+
+
+  - name: Check Nginx configuration
+    command: nginx -t
+    changed_when: false
+    register: nginx_config_check
+
+
+  - name: Reload Nginx configuration
+    command: nginx -s reload
+    when: nginx_config_check.stdout.find('successful') != -1
+    notify:
+      - service_reload
+
+
+  - name: Copy index.html 
+    ansible.builtin.copy: 
+      src: ./index.html 
+      dest: /var/www/html 
+      mode: 0555
+    notify: service_enable
+
+  handlers:
+  - name: service_enable
+    ansible.builtin.service: 
+      name: "{{ web_service }}"
+      state: started
+      enabled: yes
+
+  - name: service_reload
+    ansible.builtin.service:
+      name: "{{ web_service }}"
+      state: reloaded
